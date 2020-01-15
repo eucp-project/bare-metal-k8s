@@ -1,0 +1,35 @@
+Let JHub run it's proxy-public, and install and use Nginx on a node to proxy that to a public IP/dns name
+
+Find the internal IP of the proxy-public:
+
+In /etc/nginx/sites-available/default:
+- change the internal IP address accordingly, to that of the proxy-public service
+- handle websockets
+
+Above the server { ... } directive:
+
+# top-level http config for websocket headers
+# If Upgrade is defined, Connection = upgrade
+# If Upgrade is empty, Connection = close
+map $http_upgrade $connection_upgrade {
+     default upgrade;
+     ''      close;
+}
+
+Then, change the location / { ... } directive to
+
+	location  / {
+	proxy_pass         http://${pp_internalIP}:80;
+ 	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ 	proxy_set_header X-Forwarded-Proto $scheme;
+	proxy_set_header Host $host;
+	proxy_set_header X-Real-IP $remote_addr;
+
+    # websocket headers
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $connection_upgrade;
+
+}
+
+# Restart nginx on the controller
+# Note: if the websocket settings are not there, you'd get a "connecting to kernel" message in the notebook, and a time-out message in the nginx error logs.

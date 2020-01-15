@@ -1,0 +1,11 @@
+[all]
+node0 ansible_host=145.100.59.84
+node1 ansible_host=145.100.59.212
+node2 ansible_host=145.100.58.140
+
+[controller]
+node0
+
+[workers]
+node1
+node2

@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.6">
+<meta name="author" content="Evert Rol">
+<title>Installing JupyterHub with Kubernetes on bare metal virtual machines</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment @import statement when using as custom stylesheet */
+/*@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";*/
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section{display:block}
+audio,canvas,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+script{display:none!important}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*::before,*::after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite::before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
+:not(pre)>code.nobreak{word-wrap:normal}
+:not(pre)>code.nowrap{white-space:nowrap}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:100%;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details>summary:first-of-type{cursor:pointer;display:list-item;outline:none;margin-bottom:.75em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class="highlight"],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos{border-right:1px solid currentColor;opacity:.35;padding-right:.5em}
+pre.pygments .lineno{border-right:1px solid currentColor;opacity:.35;display:inline-block;margin-right:.75em}
+pre.pygments .lineno::before{content:"";margin-right:-.125em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin:0 0 1.25em;padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;text-align:left;margin-right:0}
+table.tableblock{max-width:100%;border-collapse:separate}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content{margin-bottom:-1.25em}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>thead>tr>.tableblock,table.grid-all>tbody>tr>.tableblock{border-width:0 1px 1px 0}
+table.grid-all>tfoot>tr>.tableblock{border-width:1px 1px 0 0}
+table.grid-cols>*>tr>.tableblock{border-width:0 1px 0 0}
+table.grid-rows>thead>tr>.tableblock,table.grid-rows>tbody>tr>.tableblock{border-width:0 0 1px}
+table.grid-rows>tfoot>tr>.tableblock{border-width:1px 0 0}
+table.grid-all>*>tr>.tableblock:last-child,table.grid-cols>*>tr>.tableblock:last-child{border-right-width:0}
+table.grid-all>tbody>tr:last-child>.tableblock,table.grid-all>thead:last-child>tr>.tableblock,table.grid-rows>tbody>tr:last-child>.tableblock,table.grid-rows>thead:last-child>tr>.tableblock{border-bottom-width:0}
+table.frame-all{border-width:1px}
+table.frame-sides{border-width:0 1px}
+table.frame-topbot,table.frame-ends{border-width:1px 0}
+table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{margin-right:.25em}
+ul.inline{display:-ms-flexbox;display:-webkit-box;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,span.alt{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media print,amzn-kf8{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+</head>
+<body class="article">
+<div id="header">
+<h1>Installing JupyterHub with Kubernetes on bare metal virtual machines</h1>
+<div class="details">
+<span id="author" class="author">Evert Rol</span><br>
+<span id="email" class="email"><a href="mailto:e.rol@esciencecenter.nl">e.rol@esciencecenter.nl</a></span><br>
+<span id="revnumber">version 1.0,</span>
+<span id="revdate">2019-04-15</span>
+</div>
+<div id="toc" class="toc">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_background">Background</a>
+<ul class="sectlevel2">
+<li><a href="#_current_setup">Current setup</a></li>
+<li><a href="#_scaling">Scaling</a></li>
+</ul>
+</li>
+<li><a href="#_installing_kubernetes">Installing Kubernetes</a>
+<ul class="sectlevel2">
+<li><a href="#_tools">Tools</a></li>
+<li><a href="#_set_up_an_initial_cluster">Set up an initial cluster</a></li>
+<li><a href="#_installing_docker_and_kubernetes_packages">Installing Docker and Kubernetes packages</a></li>
+<li><a href="#_set_up_kubernetes">Set up Kubernetes</a></li>
+<li><a href="#_calico">Calico</a></li>
+</ul>
+</li>
+<li><a href="#_storage_space_for_pods">Storage space for pods</a></li>
+<li><a href="#_setting_up_helm_and_tiller">Setting up Helm and Tiller</a></li>
+<li><a href="#_installing_jupyterhub">Installing JupyterHub</a></li>
+<li><a href="#_configuring_nginx_as_a_reverse_proxy">Configuring Nginx as a reverse proxy</a></li>
+<li><a href="#_trying_it_out">Trying it out</a></li>
+<li><a href="#_final_remarks">Final remarks</a>
+<ul class="sectlevel2">
+<li><a href="#_to_do">To do</a></li>
+<li><a href="#_notes_about_potential_problems">Notes about potential problems</a></li>
+</ul>
+</li>
+<li><a href="#_resources">Resources</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_background">Background</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The background setup is within a European climate research project; we want to provide climate scientist a place where they can perform their analyses in the cloud.
+This has two goals:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Provide a large amount of data next to the analysis environment, so that people do not have to download data to their local machine: the data can stay put in one place, and will not need to be manually copied multiple times.</p>
+</li>
+<li>
+<p>Provide a setup where scientist can create <strong>reproducible</strong> analyses, with annotated and clean code, and versioned data and code.</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>We have opted for Jupyter notebooks, since</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>these are more and more commonplace</p>
+</li>
+<li>
+<p>they are relatively straightforward to rerun by other people.
+Also, various websites allow them to be viewed, including the results (that is, the output, including figures), without having to rerun the code.
+This makes it easy to point other scientist directly to a notebook to see how the analysis was done exactly.</p>
+</li>
+<li>
+<p>notebooks allow for the use of multiple languages, making the transition for some people easier (Python will be the main language used, but people used to, for example, R, can use the notebook environment just as well</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In fact, we will not use the standard notebook setup, but the newer Jupyter Lab environment, which also provides a terminal.
+This allows even more options to transition from scripts and, for example, Fortran programs, to a more standardised (Python) notebook.</p>
+</div>
+<div class="paragraph">
+<p>The goal is to provide this Jupyter Lab setup through a Jupyter Hub in a cloud environment, with up to 100 TB parked directly next to it.
+Scientists can log in, write and fire up their analysis script, and let it crunch through all the necessary data.</p>
+</div>
+<div class="sect2">
+<h3 id="_current_setup">Current setup</h3>
+<div class="paragraph">
+<p>We use the SURFSara <a href="https://userinfo.surfsara.nl/systems/hpc-cloud">high-performance computing cloud (HPC Cloud) facility</a>.
+This uses OpenNebula to orchestrate itself.
+We have a virtual machine (VM) running in this cloud, with a JupyterHub.
+Next to the VM, we have currently 40 TB of data storage, in the form of <a href="https://ceph.com/">Ceph storage</a>, which holds the necessary scientific data.
+On the same VM, we run a data server that provides a (web) interface to the data on Ceph.</p>
+</div>
+<div class="paragraph">
+<p>Users also have a standard home directory on the VM itself, and can access this through <code>ssh</code> if so wanted.
+The preferred method is the JupyterLab interface, which provides more installed scientific software in its Docker container.
+Inside JupyterLab, there are two "exit" points out of the container: one to the data directory, and one to the users (<code>/home</code>) directory on the VM.
+Thus, from with the JupyterHub/Lab, the data can be accessed either with a URL, or if so wanted, with a file path.
+Users can also more easily share files through a simply <code>cp</code> from another users home directory (though using a file upload to a cloud service, for example something as simple as a git repository, would be the more natural way inside a JupyterHub. Again, this is done to ease the transition for scientists used to working on local systems).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_scaling">Scaling</h3>
+<div class="paragraph">
+<p>There is one problem with the above setup: it doesn&#8217;t scale very well.
+At the moment, the VM has access to eight CPU cores.
+If, at some point, multiple scientists want to run some intensive analysis on the data, they may stress out all the cores, and things will slow down.
+Ideally, the VM should scale with the activity on it, but this would require bringing down the VM, and starting a new VM with extra CPU cores.
+This, obviously, doesn&#8217;t work: currently running processes are lost, and there is extra downtime, with all the inconveniences.
+Yes, the SURFSara HPC Cloud info page (linked above) does mention "Dynamically scalable HPC on the cloud", but as far as I can tell, this means you can choose your favourite VM with regards to cores and memory; it does not involve scaling a live VM.</p>
+</div>
+<div class="paragraph">
+<p>Hence, I have been looking at Kubernetes, which appears to be somewhat the de facto setup for scaling a cloud environment.
+Unfortunately, Kubernetes is not installed on the HPC Cloud facility.
+Below is my attempt and guide at installing Kubernetes on the SURFSara HPC Cloud facility, and the JupyterHub on top of that (including access to permanent user home directories and a Ceph disk with 100 TB of data).</p>
+</div>
+<div class="paragraph">
+<p>(There is another option: let each scientist start their own VM when needed.
+This would require a less common setup, where scientists have to learn to handle the HPC Cloud.
+While a default VM for climate scientist can be created (just like a Docker container), all in all, I feel this creates to many barriers for use.)</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installing_kubernetes">Installing Kubernetes</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_tools">Tools</h3>
+<div class="paragraph">
+<p>The tool for setting up the bare VMs with the necessary software is <a href="https://www.ansible.com/">Ansible</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_set_up_an_initial_cluster">Set up an initial cluster</h3>
+<div class="paragraph">
+<p>I have started with three VMs, all based on the default Ubuntu 18.04.02 Long Term Service (LTS) (code-named Bionic Beaver, or simply Bionic, which is used from hereon).
+These are all two cores and 3 GB memory.
+One will serve as a controller, and the other two nodes are the workers.
+All Kubernetes pods will be running on the workers, nothing on the controller.
+A standard VM is set up such that my public key will be installed in the <code>ubuntu</code> administrator account, so I have passwordless access into that account, and from there I can install anything with <code>sudo</code>.
+The default VM has ports 22 (ssh) inbound and ports 53 (dns), 67 and 68 (dhcp) open to the outside world; all other ports are blocked by default.</p>
+</div>
+<div class="sect3">
+<h4 id="_hostname">Hostname</h4>
+<div class="paragraph">
+<p>If your VM system does as mine does, then every node will have the same hostname (named partly after the OS: <code>packer-Ubuntu-18</code>).
+This is going to cause problems with Kubernetes, at least in my experience.
+I have changed the hostnames on each node (simply to <code>node0</code>, <code>node1</code> etc), and altered the <code>/etc/hosts</code> accordingly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>export hostname=node0
+sed -i.bck -E  's/^127\.0\.1\.1..*(packer\-Ubuntu\-[[:digit:]][[:digit:]]*)$/127.0.1.1       \1-Server    node0/' /etc/hosts
+sed -i.bck -E  's/^127\.0\.0\.1\s\s*(packer\-Ubuntu\-[[:digit:]][[:digit:]]*)$/127.0.0.1 node0/' /etc/hosts</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_installing_docker_and_kubernetes_packages">Installing Docker and Kubernetes packages</h3>
+<div class="paragraph">
+<p>There is no officially supported Kubernetes package for Bionic yet: this installation uses the 16.04 (Xenial) version, which so far, works fine on Bionic.
+I have opted to install Kubernetes version 1.13.5, even though 1.14.0 is just out.
+This had one slightly unfortunate side effect: the Docker package in Ubuntu seems to have gotten updated, and Kubernetes will complain the standard package is a non-supported version.
+Thus, I had to add both the Kubernetes and Docker Ubuntu repositories to the Ubuntu package manager.</p>
+</div>
+<div class="paragraph">
+<p>First update apt:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>apt update</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If your version of apt is less than 1.5, you need to install the <code>apt-transport-https</code> package (for details, see <a href="https://whydoesaptnotusehttps.com/" class="bare">https://whydoesaptnotusehttps.com/</a>):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>apt install apt-transport-https</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>On Bionic, the version of apt is 1.6, so there is no need for this.</p>
+</div>
+<div class="paragraph">
+<p>Next, get the keys for Google&#8217;s and Docker&#8217;s package repositories and add them to apt:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Add the repositories to the list of apt repositories:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>cat &gt; /etc/apt/sources.list.d/docker.list &lt;&lt;EOF
+deb http://download.docker.com/linux/ubuntu xenial stable
+EOF
+cat &gt; /etc/apt/sources.list.d/kubernetes.list &lt;&lt;EOF
+deb http://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+
+apt update</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(That is, any file with valid repository entry in <code>/etc/apt/sources.list.d/</code> will be picked up and its contents added to the apt repositories.)</p>
+</div>
+<div class="sect3">
+<h4 id="_install_docker">Install Docker</h4>
+<div class="paragraph">
+<p>Install docker (nowadays, the package is called <code>docker-ce</code>. Don&#8217;t use <code>docker.io</code>, <code>docker-engine</code> or other variants.):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo apt install docker-ce=18.06.3~ce~3-0~ubuntu</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_extra_disk_space_for_docker_images">Extra disk space for Docker images</h4>
+<div class="paragraph">
+<p>Here, I had to take an extra step: the disk images of the VMs are not large enough to store all the images that Docker pulls from its repository.
+Hence, I had to point the Docker system directory elsewhere, as follows:</p>
+</div>
+<div class="paragraph">
+<p>Stop Docker:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo systemctl stop docker</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Create a <code>/etc/docker/daemon.json</code> with a single entry:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo cat &gt; /etc/docker/daemon.json &lt;&lt;EOF
+{
+  "graph":"/mnt/data/docker"
+}
+EOF</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>That will point Docker to look in the <code>/mnt/data/docker</code> directory. Docker will ensure the subdirectory is made, you just have to make sure the mount point <code>/mnt/data</code> is correct.
+If you need this extra space at all, of course: my VM disk sizes are 10 GB, and a single Jupyter datascience notebook Docker image is already some 6.22 GB.</p>
+</div>
+<div class="paragraph">
+<p>Now, restart Docker and verify it&#8217;s running correctly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo systemctl start docker
+systemctl status docker
+sudo ls /mnt/data/docker</code></pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_kubernetes_package_installation">Kubernetes package installation</h4>
+<div class="paragraph">
+<p>Kubernetes is a straightforward install:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo apt install kubeadm=1.13.5-00 kubelet=1.13.5-00 kubectl=1.13.5-00</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_set_up_kubernetes">Set up Kubernetes</h3>
+<div class="paragraph">
+<p>On the controller node, you&#8217;ll need to open some ports.
+The following steps need only to be done on your controller node, thus, ssh into your controller.
+I use ufw, install it with <code>sudo apt install ufw</code> if it&#8217;s not there (ufw is the abbreviation of uncomplicated firewall, and is a frontend for <code>iptables</code>).
+I restrict the access to the necessary Kubernetes ports to hosts within the cloud network, which has (roughly) the subnet of <code>145.100.56.0/22</code>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo ufw allow proto tcp from 145.100.56.0/22 to any port 6443,2379,2380,10250,10251,10252
+sudo ufw status</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, initialise the cluster at your controller:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo kubeadm init --pod-network-cidr {{ 192.168.64.0/18 }} --service-cidr {{ 192.168.0.0/18 }}</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+I specify both the pod network Classless Inter-Domain Routing (CIDR), and that of the services.
+Most guides and examples only specify the <code>--pod-network-cidr</code> option.
+I also do not use the standard <code>10.244.0.0/16</code> for the pod network, given in most examples.
+The reason for this is that there is an internal network in the HPC Cloud that falls close to, if not overlaps with, this subnet.
+I want to avoid any clashes between these networks, hence I&#8217;m using a different network, both for the pods and the services.
+As an extra, in the near future, I hope to be able to use the internal network addresses as external IPs within the Kubernetes cluster.
+That way, the outward facing public IPs (the ones in the <code>145.100.0.0/22</code> range) will only have the <code>ssh</code> port open.
+.
+The disadvantage, from what I have figured so far, is that this limits the number of setups, in particular the network fabric options.
+Flannel, a popular option for this, is preconfigured to use the default subnets.
+Until I can figure out if I can and how to adjust Flannel, I can&#8217;t use it.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>With the Kubernetes controller now running, we can copy the config to a non-root account.
+I&#8217;m using the standard <code>ubuntu</code> account, which, as an admin account, is nearly not as good as a dedicated Kubernetes account, but it works for now.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>mkdir $HOME/.kube
+sudo cp /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown ubuntu:ubuntu $HOME/.kube/config</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+if you want to reset the actions of <code>kubeadm</code>, then use <code>kubeadm reset</code>.
+This also works on the nodes after joining the Kubernetes network.
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>if you have <code>kubectl</code> installed on your local machine (desktop, laptop), you can copy the configuration file to your <code>$HOME/.kube/config</code> file there, and run all the kubectl commands from there: no need for sudo, no need to ssh into the controller!</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code># From local machine
+scp controller:.kube/config ~/.kube/config</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This assumes an entry like</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>host controller
+  HostName 145.100.x.y
+  IdentityFile ~/.ssh/id_rsa
+  User ubuntu</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>in your <code>~/.ssh/config</code> file on your local machine.</p>
+</div>
+<div class="paragraph">
+<p>Ensure your control machine has proper access to your controller node, with regards to the firewall settings.
+The simplest way is to get its IP and on the controller, open the firewall for that machine:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo ufw allow from &lt;control-machine-ip&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>or if you want to be more restrictive:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo ufw allow from &lt;control-machine-ip&gt; to any \
+    port 6443,2379,2380,10250,10251,10252</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect3">
+<h4 id="_hooking_up_the_workers">Hooking up the workers</h4>
+<div class="paragraph">
+<p>First, print the command necessary to join the controller (on your controller): this will contain some security tokens:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubeadm token create  --print-join-command</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will output a line like (no need for <code>sudo</code> here):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubeadm join 145.100.x.y:6443 --token gmdirx.udxjw6amqtp2soq0 --discovery-token-ca-cert-hash sha256:6ee755599276cfd015eb005e395e0d26a6fccbabf30600f0ecb15f5675620634</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Copy this line, ssh into a worker, and execute this in the worker:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo kubeadm join 145.100.57.220:6443 --token dmgurz.udxjw5masft2soq0 --discovery-token-ca-cert-hash sha256:d015eb005e395e0d26a6fccbabf30600f0ecb15f56756206346ee755599276cf</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_calico">Calico</h3>
+<div class="paragraph">
+<p>Since I am using Calico for the pod network, I also need to enable port 179 (Border Gateway Protocol, bgp):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>sudo ufw allow proto tcp from 145.100.56.0/22 to any port 179
+sudo ufw status</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Of course, Calico also needs to be installed.
+And the value of <code>CALICO_IPV4POOL_CIDR</code> in its configuration file needs to be changed to match the pod network used above.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>curl -O https://docs.projectcalico.org/v3.6/getting-started/kubernetes/installation/hosted/kubernetes-datastore/calico-networking/1.7/calico.yaml
+sed -i.bck 's#192\\.168\\.0\\.0/16#192.168.64.0/18#'  calico.yaml
+kubectl apply -f calico.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(The comments in the calico.yaml mention <code>--cluster-cidr</code> instead of <code>--pod-network-cidr.
+This is because `kubeadm</code> is a front-end for other tools that use <code>--cluster-cidr</code>.
+If you explicitly want to see the <code>cluster-cidr</code>, use</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl cluster-info dump | grep cluster-cidr</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that Calico is installed and the workers are connected to the controller, you should be able to see the pods up and running (give it a minute before everything runs fully):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ kubectl get pods --all-namespaces --output wide
+NAMESPACE     NAME                                       READY   STATUS    RESTARTS   AGE   IP                NODE         NOMINATED NODE   READINESS GATES
+kube-system   calico-kube-controllers-55df754b5d-rj687   1/1     Running   0          84m   192.168.75.2      node2        &lt;none&gt;           &lt;none&gt;
+kube-system   calico-node-cz5rw                          1/1     Running   0          84m   145.100.57.36     node1        &lt;none&gt;           &lt;none&gt;
+kube-system   calico-node-fcqwm                          1/1     Running   0          84m   145.100.57.38     node2        &lt;none&gt;           &lt;none&gt;
+kube-system   calico-node-jjjtp                          1/1     Running   0          84m   145.100.57.33     controller   &lt;none&gt;           &lt;none&gt;
+kube-system   coredns-86c58d9df4-6hj4w                   1/1     Running   0          84m   192.168.75.1      node2        &lt;none&gt;           &lt;none&gt;
+kube-system   coredns-86c58d9df4-m7hsg                   1/1     Running   0          84m   192.168.75.3      node2        &lt;none&gt;           &lt;none&gt;
+kube-system   etcd-controller                            1/1     Running   0          83m   145.100.57.33     controller   &lt;none&gt;           &lt;none&gt;
+kube-system   kube-apiserver-controller                  1/1     Running   0          83m   145.100.57.33     controller   &lt;none&gt;           &lt;none&gt;
+kube-system   kube-controller-manager-controller         1/1     Running   0          83m   145.100.57.33     controller   &lt;none&gt;           &lt;none&gt;
+kube-system   kube-proxy-9dckf                           1/1     Running   0          84m   145.100.57.38     node2        &lt;none&gt;           &lt;none&gt;
+kube-system   kube-proxy-v4dqg                           1/1     Running   0          84m   145.100.57.33     controller   &lt;none&gt;           &lt;none&gt;
+kube-system   kube-proxy-wbgff                           1/1     Running   0          84m   145.100.57.36     node1        &lt;none&gt;           &lt;none&gt;
+kube-system   kube-scheduler-controller                  1/1     Running   0          83m   145.100.57.33     controller   &lt;none&gt;           &lt;none&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that they are all listed in the <code>kube-system</code> namespace, as they should.
+Hence I use the <code>--all-namespaces</code> flag (the short version is <code>-A</code>).
+I have also used the <code>--output wide</code> option (short: <code>-o</code>), to get some extra information about the pods, including their IP addresses.
+You&#8217;ll notice a mix of internal (192.168.x.y) and external (145.100.57.z) addresses.
+The RESTARTS column is good to pay attention to if you notice a pod is not 1/1 READY: it there area lot of restarts in its uptime, that pod clearly has a problem.
+Try and use <code>kubectl logs &lt;podname&gt; [-n &lt;namespace&gt;]</code> for a debugging start.</p>
+</div>
+<div class="paragraph">
+<p>You can also list the available services:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ kubectl get svc -A
+NAMESPACE     NAME            TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+default       kubernetes      ClusterIP      192.168.0.1      &lt;none&gt;        443/TCP                      83m
+kube-system   kube-dns        ClusterIP      192.168.0.10     &lt;none&gt;        53/UDP,53/TCP                82m</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_storage_space_for_pods">Storage space for pods</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We&#8217;ll want some storage space for the Jupyter pods that will be running later.
+Ideally, this means using a storage space provided by the cloud setup, but since there is none, I&#8217;m using fixed storage.
+This is obviously not ideal, but works for our demonstration case.</p>
+</div>
+<div class="paragraph">
+<p>In Kubernetes, there is the concept of a <code>PersistentVolume</code> for providing storage.
+Here, I tie these persistent volumes to a directory on disk.
+The CEPH data disk is mounted at <code>/mnt/data</code>, with each node having one disk mounted.
+I made three directories, an identical one on each node (not necessary, for demonstration purposes), which ise the one for user storage, and another on node 2 other for JupyterHub&#8217;s database.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code># on node1:
+sudo mkdir /mnt/data/pv-user
+# on node2:
+sudo mkdir /mnt/data/pv-user
+sudo mkdir /mnt/data/pv-hub</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that node1 is the first worker, and node2 is the second worker.
+I am not using the controller for volumes, since pods are not running on the controller.
+Root access is fine, since you&#8217;ve started <code>kubeadm</code> as root as well.</p>
+</div>
+<div class="paragraph">
+<p>Now, create a <code>pv.yaml</code> file, as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-user
+  namespace: jhub
+  labels:
+    hub: jhub
+    type: hubdb
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hub-user-storage
+  local:
+    path: /mnt/data/pv-user
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - node1
+          - node2
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-hub
+  namespace: jhub
+  labels:
+    hub: jhub
+    type: hubdb
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hub-storage
+  local:
+    path: /mnt/data/pv-hub
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - node2</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The first part is for user storage, with a total allowed amount of 50 Gi (GibiByte, so a proper <code>50 x 2^30</code>).
+The second part is for the JupyterHub database, for a total of 5 Gi.
+The default JupyterHub database is SQLite, and simply requires a disk file, which is written into this space.</p>
+</div>
+<div class="paragraph">
+<p>Note the <code>nodeAffinity</code> section to match the <code>path</code> with the proper node; verify that this is corresponds with the directories you created before.</p>
+</div>
+<div class="paragraph">
+<p>Finally, there is the <code>storageClassName</code>, which will be used to match volumes by JupyterHub when running.</p>
+</div>
+<div class="paragraph">
+<p>Create the volumes in your cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl -f apply pv.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and check the result:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl get pv</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For me, this results in something like</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM             STORAGECLASS       REASON   AGE
+pv-hub    5Gi        RWO            Retain           Available                  hub-storage                 8m14s
+pv-user   50Gi       RWO            Retain           Available                  hub-user-storage            8m14s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, we also need to set up a standard <code>persistentVolumeClaim</code> for the user space.
+JupyterHub will take of the database part, but we need to help it for the user disk space.
+Perhaps important to note: by default, this is not necessary.
+But since there is no standard storage provided by the cloud, I do this all manually.
+Normally, you should not have to bother with this (then again, this <strong>is</strong> a bare-metal setup).</p>
+</div>
+<div class="paragraph">
+<p>The configuration file for the <code>persistentVolumeClaim</code>, <code>pvc.yaml</code>, looks as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: jhub
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-user
+  namespace: jhub
+spec:
+  storageClassName: hub-user-storage
+  resources:
+    requests:
+      storage: 2Gi
+  accessModes:
+  - ReadWriteOnce
+  volumeName: "pv-user"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>So each user will be allowed 2 Gi of storage.
+The claim is matched to the volume by the <code>volumeName</code>.</p>
+</div>
+<div class="paragraph">
+<p>For persistent volume claims, we need a namespace, matching that of the JupyterHub that we are going to install later.
+It&#8217;s already used above, in <code>pv.yaml</code>, even though it doesn&#8217;t serve an actual purpose there (persistent volumes appear to have no namespace affinity).
+Therefore, an extra configuration section to create the actual namespace where the claim will be installed, is added to the top of the file.</p>
+</div>
+<div class="paragraph">
+<p>Before creating this volume claim, we need to create the "jhub" namespace; Kubernetes will not automatically create a namespace for you:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl create namespace jhub</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that later, we will use this namespace again when installing JupyterHub itself.</p>
+</div>
+<div class="paragraph">
+<p>Now create the claim:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl apply -f pvc.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>It will take a few seconds to a minute, but then you should see the claim to have found the volume, and the volume to be bound to a claim:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ kubectl get pv
+NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS      CLAIM           STORAGECLASS       REASON   AGE
+pv-hub    5Gi        RWO            Retain           Available                   hub-storage                 9m23s
+pv-user   50Gi       RWO            Retain           Bound       jhub/pvc-user   hub-user-storage            9m23s
+
+$ kubectl get pvc -n jhub
+NAMESPACE   NAME       STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS       AGE
+jhub        pvc-user   Bound    pv-user   50Gi       RWO            hub-user-storage   2m13s</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now that that is set up, let&#8217;s take care of installing JupyterHub with Helm.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_setting_up_helm_and_tiller">Setting up Helm and Tiller</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Helm and Tiller are the Kubernetes package manager: Helm works on the client side, Tiller on the server side.
+Since I run everything from my laptop (using the copied <code>~/.kube/config</code> file as per above), I have installed Helm there.
+On my Mac, that was simply <code>brew install helm</code>.
+There is also the <a href="https://helm.sh/docs/using_helm/#installing-helm">official installation guide</a>.</p>
+</div>
+<div class="paragraph">
+<p>Once you have Helm installed (try <code>helm version</code>), make preparations for Tiller.
+We set up a service account for Tiller, and set the Role-based access control (RBAC) permissions (since we are using Kubernetes 1.13.5, RBAC is on by default):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl --namespace kube-system create serviceaccount tiller
+# Set RBAC permissions:
+kubectl create clusterrolebinding tiller --clusterrole cluster-admin --serviceaccount=kube-system:tiller
+# Check with:
+kubectl get clusterrolebinding</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now we initialize Helm and set up Tiller in the cluster:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>helm init --service-account tiller --wait</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Once done, we can see the Tiller pod running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl get pod -n kube-system -l name=tiller</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Finally, Helm and Tiller need to be secured properly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl patch deployment tiller-deploy --namespace=kube-system --type=json --patch='[{"op": "add", "path": "/spec/template/spec/containers/0/command", "value": ["/tiller", "--listen=localhost:44134"]}]'</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check the version again, and see that Tiller shows up properly:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>helm version</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_installing_jupyterhub">Installing JupyterHub</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Finally, we can install JupyterHub.
+First, of course, there needs to be configuration file set up, <code>jupyterhub-config.yaml</code>.
+This is mine:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code># Create random string with `openssl rand -hex 32`
+proxy:
+  secretToken: "&lt;hex&gt;"
+
+singleuser:
+  storage:
+    type: static
+    static:
+      pvcName: pvc-user
+      subpath: "home/{username}"
+    dynamic:
+      storageClassName: hub-user-storage
+
+hub:
+  db:
+    pvc:
+      storageClassName: hub-storage
+      storage: 5Gi
+      accessModes:
+      - ReadWriteOnce</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The secretToken needs to be changed to the actual output of</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>openssl rand -hex 32</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>For the single user storage, I have set the <code>type</code> to <code>static</code>.
+The default is <code>dynamic</code>, for which the <code>dynamic</code> section would be used (now, it actually serves no purpose, since it will be ignored).
+There is also the storage type of <code>none</code>, which means users will not have any permanent storage: between server (notebook) restarts, their data will not be saved.
+This is similar to what BinderHub uses, except there is no idle timeout configured here.
+The <code>static.pvcName</code> part matches the volume claim we set up earlier.</p>
+</div>
+<div class="paragraph">
+<p>The <code>hub.db.pvc</code> section relates to the SQLite database mentioned earlier.
+Here, the match is on the <code>storageClassName</code>; verify that this indeed matches the <code>storageClassName</code> set earlier for the <code>pv-hub</code>.</p>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s finally install JupyterHub:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>RELEASE=jhub
+NAMESPACE=jhub
+# 0.8.2 JupyterHub Helm chart = JupyterHub 0.9.6, and requires Kubernetes 1.11+, Helm 2.11.0+
+helm upgrade --install $RELEASE jupyterhub/jupyterhub \
+  --namespace $NAMESPACE  \
+  --version=0.8.2 \
+  --values jupyterhub-config.yaml</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>(Note that JupyterHub Helm charts version numbers are not the same as JupyterHub&#8217;s version numbers.)</p>
+</div>
+<div class="paragraph">
+<p>Here, we also set the namespace, "jhub", that we already configured earlier for our persistent volume claims.</p>
+</div>
+<div class="paragraph">
+<p>If you have changed something in <code>jupyterhub-config.yaml</code>, apply the changes to the cluster with</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>helm upgrade -f updated-values.yml $RELEASE jupyterhub/jupyterhub</code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+Although the JupyterHub configuration file is also a YAML file, it should not be used as normal Kubernetes YAML configuration files.
+<code>kubectl apply -f jupyterhub-config.yaml</code> will simply not work.
+When installing with <code>helm</code>, the installation will replace values in the actual Kubernetes configuration files with values provided in this file.
+Hence the use of <code>helm &#8230;&#8203; --values jupyterhub-config.yaml</code> here.
+And indeed, both for <code>kubectl</code> and <code>helm</code>, the <code>-f</code> option is short for <code>--values</code>.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Check that JupyterHub is running:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ kubectl get service --namespace jhub
+NAME           TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+hub            ClusterIP      192.168.48.235   &lt;none&gt;        8081/TCP                     4h20m
+proxy-api      ClusterIP      192.168.48.152   &lt;none&gt;        8001/TCP                     4h20m
+proxy-public   LoadBalancer   192.168.50.38    &lt;pending&gt;     80:32612/TCP,443:32421/TCP   4h20m</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also verify that JupyterHub has claimed the database volume we set up:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ kubectl get pvc -A
+NAMESPACE   NAME         STATUS   VOLUME    CAPACITY   ACCESS MODES   STORAGECLASS       AGE
+jhub        hub-db-dir   Bound    pv-hub    5Gi        RWO            hub-storage        2m33s
+jhub        pvc-user     Bound    pv-user   50Gi       RWO            hub-user-storage   5m54s
+
+$ kubectl get pv
+NAME      CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM             STORAGECLASS       REASON   AGE
+pv-hub    5Gi        RWO            Retain           Bound    jhub/hub-db-dir   hub-storage                 10m
+pv-user   50Gi       RWO            Retain           Bound    jhub/pvc-user     hub-user-storage            10m</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_configuring_nginx_as_a_reverse_proxy">Configuring Nginx as a reverse proxy</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You may notice that the external IP for the <code>proxy-public</code> remains pending, rather indefinitely.
+This is because there is no DHCP server inside the cloud we can hook into (there definitely is a server though, since our VMs all have an IP).
+Instead, we simply use Nginx on our controller to send incoming requests to the <code>proxy-public</code> service of JupyterHub, and vice-versa.</p>
+</div>
+<div class="paragraph">
+<p>That means Nginx needs to be installed on the controller first:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>ssh controller
+sudo apt install nginx
+sudo ufw allow http
+sudo ufw allow https</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Find the cluster IP of the <code>proxy-public</code> service:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl get svc -n jhub -lapp=jupyterhub,component=proxy-public -o=jsonpath="{.items[0]['spec']['clusterIP']}"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, edit the <code>default</code> Nginx configuration file (you may want to use a separate file for this, but using the default one works well for demonstration purposes):</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Near the top, <strong>before</strong> the <code>server { &#8230;&#8203; }</code> directive, add a few lines to define necessary WebSocket variables:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code># top-level http config for websocket headers
+# If Upgrade is defined, Connection = upgrade
+# If Upgrade is empty, Connection = close
+map $http_upgrade $connection_upgrade {
+     default upgrade;
+     ''      close;
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, inside the <code>server</code> directive, replace the contents of the <code>location / { &#8230;&#8203;. }</code> part with:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>	location / {
+    		proxy_pass http://192.168.x.y:80;
+    		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    		proxy_set_header X-Forwarded-Proto $scheme;
+    		proxy_set_header Host $host;
+    		proxy_set_header X-Real-IP $remote_addr;
+
+ 			# websocket headers
+ 			proxy_set_header Upgrade $http_upgrade;
+ 			proxy_set_header Connection $connection_upgrade;
+	}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Replace the <code>192.168.x.y</code> with that of the internal IP of the <code>proxy-public</code> service found before.
+Don&#8217;t forget to remove the (default) 404 line in this section as well.</p>
+</div>
+<div class="paragraph">
+<p>Restart and check, and you should be good to go, by opening a web browser at the IP address of your controller.
+Note that there is no https yet, so your browser may complain and refuse to open the webpage without manual intervention, since JupyterHub prefers https.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_trying_it_out">Trying it out</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Finally, we have a JupyterHub running on Kubernetes, with some work-arounds.
+Let&#8217;s see if it works properly.
+Log in on the webpage with a random user name and no password.
+It takes a few seconds, but then your server should start and you&#8217;ll see the notebook interface.
+Create a notebook and execute a few cells, and make sure to save it.</p>
+</div>
+<div class="paragraph">
+<p>Now, in <strong>another</strong> web browser, open the login page again.
+You need another web browser, because JupyterHub saves sessions in browser cookies.
+Alternatively, you can log out of your current notebook.
+Log in as a different user.
+Again, create a file (this time, a text file perhaps), add some text and save it.</p>
+</div>
+<div class="paragraph">
+<p>Finally, log out, close the tab or browser, and log in with the same user account: you should find the file still there.</p>
+</div>
+<div class="paragraph">
+<p>On the server side, let&#8217;s look at the pods:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>kubectl get pods --output wide -n jhub
+NAME                     READY   STATUS    RESTARTS   AGE     IP                NODE    NOMINATED NODE   READINESS GATES
+hub-f889bc89c-ghtdh      1/1     Running   0          11m     192.168.75.23     node2   &lt;none&gt;           &lt;none&gt;
+jupyter-asdf             1/1     Running   0          2m59s   192.168.102.147   node1   &lt;none&gt;           &lt;none&gt;
+jupyter-qwer             1/1     Running   0          55s     192.168.75.24     node2   &lt;none&gt;           &lt;none&gt;
+proxy-845d789775-jq9fq   1/1     Running   0          11m     192.168.102.146   node1   &lt;none&gt;           &lt;none&gt;</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>I have been using a "asdf" and a "qwer" login (easy to type).
+Note the two newest pods (about three and one minute old) that are called "jupyter-{login}".
+Note also the the nodes on which these pods are running.
+Let&#8217;s inspect the user directory made for the persistent volumes on these nodes:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlight"><code>$ ssh node1 ls -F /mnt/data/pv-user
+asdf/
+$ ssh node2 ls -F /mnt/data/pv-user
+qwer/</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you peek inside those "asdf" and "qwer" folders, you&#8217;ll find the exact files created in the notebook (plus a few bookkeeping files)!
+This is where your persistent storage lives, and why logging out is safe.
+Obviously, you can also look at the <code>pv-hub</code> directory (for me, at <code>node2:/mnt/data/pv-hub/</code>), which shows two files: <code>jupyterhub_cookie_secret</code> and <code>jupyterhub.sqlite</code>.
+You can even look in the SQLite database with a tool like <code>sqlite3</code>, but you obviously don&#8217;t want to make any changes in it.</p>
+</div>
+<div class="paragraph">
+<p>If you quit a server in your Jupyter session, you&#8217;ll see the pod disappear from the cluster (initially, it will have "Completed" status for a short time).
+Thanks to the naming scheme, however, once the same user logs in again, a new pod and server will be started up, but tied to the same storage (and the pod will, of course, have the same name again as well).</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_final_remarks">Final remarks</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>This is the end of the lengthy guide of setting up JupyterHub on Kubernetes on a bare metal system.</p>
+</div>
+<div class="paragraph">
+<p>There is still more to do; I have put these items as a to-do list below.
+The most important one, is to scale the VM network depending on the load, by adding or removing VMs.
+These VMs should then join the Kubernetes automatically, and new pods will (also) be created there.
+Removing them when the load is low, to reduce the CPU hours used, may be more difficult, since (idle) pods would need to be removed from one node to the other nodes.</p>
+</div>
+<div class="paragraph">
+<p>There are also a few brief notes, often mentioned above in the text, about some issues I ran into.</p>
+</div>
+<div class="paragraph">
+<p>And finally, some pointers to resources (webpages) that I have found useful in my quest.</p>
+</div>
+<div class="sect2">
+<h3 id="_to_do">To do</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>use virtual private cloud 10.x.y.z network, instead of public IPs</p>
+</li>
+<li>
+<p>use different user for kubectl, instead of ubuntu admin account</p>
+</li>
+<li>
+<p>try and use dynamic storage, instead of storage tied to node directories</p>
+</li>
+<li>
+<p>connect permanent user home directories with the pods.
+This may overrule the previous point.
+(Underlying reason is that this allows ssh access if necessary, as well as local, for example PAM, authentication.)</p>
+</li>
+<li>
+<p>verify that our Nginx - public-proxy is correct and good enough for our purposes&#8201;&#8212;&#8201;See if there is an easier way to forward the public-proxy, since now it&#8217;s set to a LoadBalancer with a public IP pending.</p>
+</li>
+<li>
+<p>Scale VMs with load.
+See the remark before.</p>
+</li>
+<li>
+<p>Manage certificates for https use.
+Some info at <a href="https://zero-to-jupyterhub.readthedocs.io/en/latest/security.html" class="bare">https://zero-to-jupyterhub.readthedocs.io/en/latest/security.html</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_notes_about_potential_problems">Notes about potential problems</h3>
+<div class="ulist">
+<ul>
+<li>
+<p>set envvar ANSIBLE_HOST_KEY_CHECKING to False (export ANSIBLE_HOST_KEY_CHECKING=False)</p>
+</li>
+<li>
+<p>flannel apparently only allows for cidr 10.x.y.z; I&#8217;m using Calico instead</p>
+</li>
+<li>
+<p>nodes should <strong>not</strong> have the same hostname. If you, however, use a cloud environment to instantiate a set of VMs, they may very well end up with the same hostname.</p>
+</li>
+<li>
+<p><strong>all</strong> nodes should have the kubernetes ports open (not just the controller). Perhaps 6443 is excepted from the worker nodes, since they connect to the controller on that port.</p>
+</li>
+<li>
+<p>debug connection/dns issues with busybox: <a href="https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/" class="bare">https://kubernetes.io/docs/tasks/administer-cluster/dns-debugging-resolution/</a></p>
+</li>
+<li>
+<p>Calico needs port 179 open, for BGP protocol. Found by looking in the nodes' ufw logs.</p>
+</li>
+<li>
+<p><a href="https://github.com/kubernetes/ingress-nginx" class="bare">https://github.com/kubernetes/ingress-nginx</a> is the Kubernetes community managed Nginx ingress. Not the ones managed by the Nginx company.</p>
+</li>
+<li>
+<p>Use <code>kubeadm reset</code> to clean up after <code>kubeadm init</code> or <code>kubeadm join</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_resources">Resources</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>I only list the resources that make sense to start reading from their entry point.
+For example, the documentation for Kubernetes itself is not listed (<a href="https://kubernetes.io/docs/home/" class="bare">https://kubernetes.io/docs/home/</a> , if you wanted to know), since that is a huge amount of documentation, and most of the time, you would be guided to a subsection from a search result.
+On the other hand, the Zero to JupyterHub guide can actually be read from the start, since it has good subsection pointers.</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://cilium.io/blog/2018/09/26/bionic-beaver/" class="bare">https://cilium.io/blog/2018/09/26/bionic-beaver/</a></p>
+</li>
+<li>
+<p><a href="https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-1-11-cluster-using-kubeadm-on-ubuntu-18-04" class="bare">https://www.digitalocean.com/community/tutorials/how-to-create-a-kubernetes-1-11-cluster-using-kubeadm-on-ubuntu-18-04</a></p>
+</li>
+<li>
+<p><a href="https://zero-to-jupyterhub.readthedocs.io/en/latest/index.html" class="bare">https://zero-to-jupyterhub.readthedocs.io/en/latest/index.html</a></p>
+</li>
+<li>
+<p><a href="https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-ingress-guide-nginx-example.html" class="bare">https://matthewpalmer.net/kubernetes-app-developer/articles/kubernetes-ingress-guide-nginx-example.html</a></p>
+</li>
+<li>
+<p><a href="https://zonca.github.io/2017/12/scalable-jupyterhub-kubernetes-jetstream.html" class="bare">https://zonca.github.io/2017/12/scalable-jupyterhub-kubernetes-jetstream.html</a></p>
+</li>
+<li>
+<p><a href="https://github.com/data-8/kubeadm-bootstrap" class="bare">https://github.com/data-8/kubeadm-bootstrap</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Version 1.0<br>
+Last updated 2019-04-30 09:47:44 +0200
+</div>
+</div>
+</body>
+</html>

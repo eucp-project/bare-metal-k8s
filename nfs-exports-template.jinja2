@@ -1,0 +1,1 @@
+/mnt/users  {% for client in {{ groups['workers'] }} %}{{ hostvars[client].ansible_host }}(rw,rync,no_subtree_check){% endfor %}

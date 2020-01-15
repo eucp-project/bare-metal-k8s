@@ -1,0 +1,14 @@
+intnet:
+  podcidr: 192.168.64.0/18
+  servicecidr: 192.168.0.0/18
+  controller: 192.168.100.1
+extnet:
+  subnet: 145.100.56.0/22
+  subnets:
+  - 145.100.56.0/22
+  - 10.100.116.0/24
+
+control_client_ips:
+  - ${clientip}
+
+HOME: /home/ubuntu

@@ -1,0 +1,10 @@
+https://medium.com/@georgepaw/jupyterhub-with-kubernetes-on-single-bare-metal-instance-tutorial-67cbd5ec0b00
+
+
+LDAP
+https://extrapolations.dev/blog/2016/09/jupyterhub-kubernetes-ldap/
+
+
+NFS
+https://github.com/jupyterhub/zero-to-jupyterhub-k8s/issues/421
+https://extrapolations.dev/blog/2016/09/jupyterhub-kubernetes-nfs/

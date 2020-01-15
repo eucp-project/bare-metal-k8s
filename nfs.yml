@@ -1,0 +1,55 @@
+- hosts: controller
+
+  tasks:
+
+  - name: install nfs host software
+    apt:
+      name: [nfs-kernel-server]
+      state: present
+
+  - name: Stop Docker service
+    systemd:
+       name: nfs-kernel-server
+       state: stopped
+
+  - name: open ports for NFS access from worker nodes
+    ufw:
+      rule: allow
+      from: "{{ hostvars[item].ansible_host }}"
+      to_port: 2049
+      proto: tcp
+    loop: "{{ groups['workers'] }}"
+
+  - name: set up /etc/exports
+    template:
+      src: nfs-exports.j2
+      dest: /etc/exports
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: Stop Docker service
+    systemd:
+       name: nfs-kernel-server
+       enabled: yes
+       state: started
+
+
+- hosts: workers
+
+  tasks:
+
+  - name: create the NFS home and data directories
+    file:
+      path: "/nfs/{{ item }}"
+      state: directory
+      recurse: yes
+    loop: [home, data]
+
+  - name: mount the NFS home directory
+    mount:
+      path: "/nfs/{{ item[0] }}"
+      src: "{{ hostvars[groups['controller'][0]].ansible_host }}:/mnt/{{ item[1] }}"
+      state: mounted
+      fstype: nfs
+    loop: [[home, users], [data, data]]
